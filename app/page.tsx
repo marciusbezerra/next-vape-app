@@ -1,101 +1,105 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Tabela de potências (simplificada para este exemplo)
+const powerTable: { [key: string]: number[] } = {
+  "0.10": [40.0, 62.5, 90.0, 122.5, 136.9, 160.0, 202.5, 250.0, 302.5, 360.0],
+  "0.20": [20.0, 31.3, 45.0, 61.3, 68.5, 80.0, 101.3, 125.0, 151.3, 180.0],
+  "0.30": [13.3, 20.8, 30.0, 40.8, 45.6, 53.3, 67.5, 83.3, 100.8, 120.0],
+  "0.40": [10.0, 15.6, 22.5, 30.6, 34.2, 40.0, 50.6, 62.5, 75.6, 90.0],
+  "0.50": [8.0, 12.5, 18.0, 24.5, 27.4, 32.0, 40.5, 50.0, 60.5, 72.0],
+  "0.60": [6.7, 10.4, 15.0, 20.4, 22.8, 26.7, 33.8, 41.7, 50.4, 60.0],
+  "0.70": [5.7, 8.9, 12.9, 17.5, 19.6, 22.9, 28.9, 35.7, 43.2, 51.4],
+  "0.80": [5.0, 7.8, 11.3, 15.3, 17.1, 20.0, 25.3, 31.3, 37.8, 45.0],
+  "0.90": [4.4, 6.9, 10.0, 13.6, 15.2, 17.8, 22.5, 27.8, 33.6, 40.0],
+  "1.00": [4.0, 6.3, 9.0, 12.3, 13.7, 16.0, 20.3, 25.0, 30.3, 36.0],
+};
+
+export default function VapePowerCalculator() {
+  const [resistance, setResistance] = useState("");
+  const [normalRange, setNormalRange] = useState<{
+    min: number;
+    max: number;
+  } | null>(null);
+
+  const resistanceOptions = useMemo(() => Object.keys(powerTable), []);
+
+  const calculateNormalRange = (selectedResistance: string) => {
+    const powers = powerTable[selectedResistance];
+    if (powers) {
+      // Considerando "NORMAL" as potências nas posições 2 e 3 (índices 1 e 2)
+      setNormalRange({
+        min: Math.min(powers[3], powers[4]),
+        max: Math.max(powers[3], powers[4]),
+      });
+    } else {
+      setNormalRange(null);
+    }
+  };
+
+  const handleResistanceChange = (value: string) => {
+    setResistance(value);
+    calculateNormalRange(value);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/placeholder.svg?height=1080&width=1920')",
+      }}
+    >
+      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">
+            Calculadora de Potência para Vape
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="resistance">Resistência da Coil (Ohms)</Label>
+              <Select onValueChange={handleResistanceChange} value={resistance}>
+                <SelectTrigger id="resistance">
+                  <SelectValue placeholder="Selecione a resistência" />
+                </SelectTrigger>
+                <SelectContent>
+                  {resistanceOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}Ω
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {normalRange && (
+              <div className="mt-4 p-4 bg-primary/10 rounded-md">
+                <p className="text-lg font-semibold">
+                  Intervalo de Potência Normal:
+                </p>
+                <p className="text-xl font-bold text-green-600">
+                  {normalRange.min.toFixed(1)}W - {normalRange.max.toFixed(1)}W
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Este é o intervalo de potência considerado &quot;NORMAL&quot;
+                  para a resistência selecionada.
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
