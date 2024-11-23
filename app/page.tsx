@@ -32,6 +32,7 @@ export default function VapePowerCalculator() {
     min: number;
     max: number;
   } | null>(null);
+  const [quenteValue, setQuenteValue] = useState<number | null>(null);
 
   const resistanceOptions = useMemo(() => Object.keys(powerTable), []);
 
@@ -43,8 +44,11 @@ export default function VapePowerCalculator() {
         min: Math.min(powers[3], powers[4]),
         max: Math.max(powers[3], powers[4]),
       });
+      // Considerando "QUENTE" a potência na posição 4 (índice 3)
+      setQuenteValue(powers[5]);
     } else {
       setNormalRange(null);
+      setQuenteValue(null);
     }
   };
 
@@ -93,6 +97,20 @@ export default function VapePowerCalculator() {
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
                   Este é o intervalo de potência considerado &quot;NORMAL&quot;
+                  para a resistência selecionada.
+                </p>
+              </div>
+            )}
+            {quenteValue && (
+              <div className="mt-4 p-4 bg-primary/10 rounded-md">
+                <p className="text-lg font-semibold">
+                  Valor de Potência Quente:
+                </p>
+                <p className="text-xl font-bold text-orange-600">
+                  {quenteValue.toFixed(1)}W
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Este é o intervalo de potência considerado &quot;QUENTE&quot;
                   para a resistência selecionada.
                 </p>
               </div>
